@@ -7,7 +7,7 @@ import ff_rules as fr
 
 # %%
 # setup vars##########
-dim = 200
+dim = 100
 ######################
 
 # Make a folder to store frame images (you can look inside it to debug your plots)
@@ -21,11 +21,15 @@ cmap = plt.matplotlib.colors.ListedColormap(["black", "green", "red"])
 # cmap = plt.matplotlib.colors.ListedColormap(["black", "gray", "white"])
 
 frames = []  # list to store all frame images
+data = []
 
 # Loop over time steps (50 here, but change as you like)
-for i in range(50):
+for i in range(100):
+    temp = board.ravel()
+    data.append(np.bincount(temp))
+    
     # prevents overwriting reference board
-    new_board = np.zeros((dim, dim))
+    new_board = np.zeros((dim, dim), dtype=int)
     # go through rows and columns
     for y, row in enumerate(board):
         for x, column in enumerate(row):
@@ -51,4 +55,17 @@ for i in range(50):
 # Save all frames into a looping GIF. Increase frames per second (fps) if needed
 iio.imwrite("movie.gif", frames, loop=0, fps=10)
 print("Saved movie.gif (check your folder!)")
+# %%
+x_data = np.arange(len(data))
+data = np.array(data)
+empty, trees, fires = data.T
+plt.plot(x_data, empty, label="Empty Tiles", c="k")
+plt.plot(x_data, trees, label="Trees", c="green")
+plt.plot(x_data, fires, label="Fires", c="red")
+plt.xlabel("Time (ticks)")
+plt.ylabel("Number of tiles")
+plt.title("Progression of tile states")
+plt.legend(loc="upper right")
+plt.show()
+
 # %%
