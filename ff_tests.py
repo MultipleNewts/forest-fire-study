@@ -4,6 +4,7 @@ import imageio.v3 as iio
 import numpy as np
 import matplotlib.pyplot as plt
 import ff_rules as fr
+import ff_fitcurve as fc
 
 # %%
 # setup vars##########
@@ -67,5 +68,27 @@ plt.ylabel("Number of tiles")
 plt.title("Progression of tile states")
 plt.legend(loc="upper right")
 plt.show()
+
+# %%
+tree_fit, vars = fc.power_fit(x_data[10:], trees[10:])
+plt.scatter(x_data[10:], trees[10:], label="Trees", c="lightgreen", linewidths=1, marker="x")
+plt.plot(x_data[10:], tree_fit, label="Power Law Best Fit", c="green", linestyle="--")
+plt.xlabel("Time (ticks)")
+plt.ylabel("Number of tiles")
+plt.title("Progression of tile states")
+plt.legend(loc="upper right")
+plt.show()
+print(f"The graph has the form a*(x**k)+b where:\na={vars[0]}\nk={vars[1]}\nb={vars[2]}")
+
+# %%
+fire_fit, vars = fc.power_fit(x_data[10:], fires[10:])
+plt.scatter(x_data[10:], fires[10:], label="Fires", c="darkred", linewidths=1, marker="x")
+plt.plot(x_data[10:], fire_fit, label="Power Law Best Fit", c="red", linestyle="--")
+plt.xlabel("Time (ticks)")
+plt.ylabel("Number of tiles")
+plt.title("Progression of tile states")
+plt.legend(loc="upper right")
+plt.show()
+print(f"The graph has the form a*(x**k)+b where:\na={vars[0]}\nk={vars[1]}\nb={vars[2]}")
 
 # %%
