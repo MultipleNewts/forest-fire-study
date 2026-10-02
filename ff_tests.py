@@ -8,7 +8,7 @@ import ff_fitcurve as fc
 
 # %%
 # setup vars##########
-dim = 100
+dim = 200
 ######################
 
 # Make a folder to store frame images (you can look inside it to debug your plots)
@@ -16,7 +16,7 @@ os.makedirs("frames", exist_ok=True)
 
 # Example: starting state of your forest board
 # 0 = empty, 1 = tree, 2 = fire
-board = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.35, 0.649, 0.001])
+board = np.random.choice([0, 1, 2], size=(dim, dim), p=[1, 0, 0])
 # Color map: black=empty, green=tree, red=fire
 cmap = plt.matplotlib.colors.ListedColormap(["black", "green", "red"])
 # cmap = plt.matplotlib.colors.ListedColormap(["black", "gray", "white"])
@@ -25,10 +25,10 @@ frames = []  # list to store all frame images
 data = []
 
 # Loop over time steps (50 here, but change as you like)
-for i in range(100):
+for i in range(150):
     temp = board.ravel()
     data.append(np.bincount(temp))
-    
+
     # prevents overwriting reference board
     new_board = np.zeros((dim, dim), dtype=int)
     # go through rows and columns
@@ -60,6 +60,7 @@ print("Saved movie.gif (check your folder!)")
 x_data = np.arange(len(data))
 data = np.array(data)
 empty, trees, fires = data.T
+
 plt.plot(x_data, empty, label="Empty Tiles", c="k")
 plt.plot(x_data, trees, label="Trees", c="green")
 plt.plot(x_data, fires, label="Fires", c="red")

@@ -53,7 +53,7 @@ def check_neighbours(board, coord_x, coord_y, dim=100):
     return neighbours
 
 
-def update_cell(board, coord_x, coord_y, dim=100):
+def update_cell(board, coord_x, coord_y, dim=100, p=0.1, fpratio=0.1):
     """Updates a cell based on a set of rules
 
         Parameters
@@ -81,12 +81,13 @@ def update_cell(board, coord_x, coord_y, dim=100):
     # if a cell was burning, it is now empty
     elif state == 2:
         return 0
-    # if a cell is empty, it may become a tree with prob p=0.15
+    # if a cell is empty, it may become a tree with probability p
     elif state == 0:
-        return np.random.choice([0, 1], p=[0.85, 0.15])
-    # if a cell is a tree, it may start burning with prob p=0.01
+        return np.random.choice([0, 1], p=[1-p, p])
+    # if a cell is a tree, it may start burning with probability f=p*fpratio
     elif state == 1:
-        return np.random.choice([1, 2], p=[0.9999, 0.0001])
+        f = p * fpratio
+        return np.random.choice([1, 2], p=[1-f, f])
     # in case an unexpected outcome occurs, raise an error
     else:
         raise ValueError("Unaccounted Outcome")
