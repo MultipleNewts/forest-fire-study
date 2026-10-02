@@ -8,7 +8,9 @@ import ff_fitcurve as fc
 
 # %%
 # setup vars##########
-dim = 200
+dim = 150
+fpratio = 0.001
+p = 0.001
 ######################
 
 # Make a folder to store frame images (you can look inside it to debug your plots)
@@ -25,9 +27,9 @@ frames = []  # list to store all frame images
 data = []
 
 # Loop over time steps (50 here, but change as you like)
-for i in range(150):
+for i in range(100):
     temp = board.ravel()
-    data.append(np.bincount(temp))
+    data.append(np.bincount(temp, minlength=3))
 
     # prevents overwriting reference board
     new_board = np.zeros((dim, dim), dtype=int)
@@ -35,7 +37,7 @@ for i in range(150):
     for y, row in enumerate(board):
         for x, column in enumerate(row):
             # find new state from updating reference board
-            new_board[y, x] = fr.update_cell(board, x, y, dim=dim)
+            new_board[y, x] = fr.update_cell(board, x, y, dim=dim, p=0.1, fpratio=0.1)
     # new reference board is updated board
     board = new_board
 
