@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # ### TESTING VARS ### #
-dim = 10
+dim = 20
 test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.7, 0.29, 0.01])
 # #################### #
 
@@ -22,7 +22,7 @@ def HK_cluster(grid, dim):
 
         Returns
         -------
-        label : `array`
+        grid : `array`
             a 2d-array containing labelled clusters (Note: clusters are matched through roots,
             so they may not directly show the correct number in this array.
             Run `match_labels(...)` to fix).
@@ -30,7 +30,7 @@ def HK_cluster(grid, dim):
             a 1d-array containing the root of each index. Reduces time waste from doubling-back.
     """
     largest_label = 0
-    label = np.zeros((dim, dim), dtype=int)
+    grid = np.zeros((dim, dim), dtype=int)
     labels = np.arange(dim*dim)
 
     # perform raster scan
@@ -38,25 +38,25 @@ def HK_cluster(grid, dim):
         for col in range(dim):
             if grid[row][col] == 1:
                 try:
-                    left = label[row-1][col]
+                    left = grid[row-1][col]
                 except TypeError:
                     left = 0
                 try:
-                    above = label[row][col-1]
+                    above = grid[row][col-1]
                 except TypeError:
                     above = 0
                 if (left == 0) and (above == 0):
                     largest_label += 1
-                    label[row][col] = largest_label
+                    grid[row][col] = largest_label
                 elif (left != 0) and (above == 0):
-                    label[row][col] = find(left, labels)
+                    grid[row][col] = find(left, labels)
                 elif (left == 0) and (above != 0):
-                    label[row][col] = find(above, labels)
+                    grid[row][col] = find(above, labels)
                 else:
                     labels = union(left, above, labels)
-                    label[row][col] = find(left, labels)
+                    grid[row][col] = find(left, labels)
 
-    return label, labels[:largest_label+1]
+    return grid, labels[:largest_label+1]
 
 
 def find(value, labels):
@@ -103,13 +103,13 @@ def union(cell_l, cell_a, labels):
     return labels
 
 
-def match_labels(label, labels, dim):
+def match_labels(grid, labels, dim):
     """
-        Matches all cluster labels to their root label. Improves cluster processing
+        Matches all cluster labels to their root grid. Improves cluster processing
 
         Parameters
         ----------
-        label : `array`
+        grid : `array`
             the 2d-array containing cluster labels
         labels : `array`
             a 1d-array containing the root of each cluster index
@@ -118,13 +118,13 @@ def match_labels(label, labels, dim):
 
         Returns
         -------
-        label : `array`
-            the label grid, updated so all cells in a cluster show the root for easy processing
+        grid : `array`
+            the grid, updated so all cells in a cluster show the root for easy processing
     """
     for row in range(dim):
         for col in range(dim):
-            label[row][col] = find(label[row][col], labels)
-    return label
+            grid[row][col] = find(grid[row][col], labels)
+    return grid
 
 
 tlabel, tlabels = HK_cluster(test_grid, dim)
