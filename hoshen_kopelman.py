@@ -96,7 +96,8 @@ def union(cell_l, cell_a, labels):
         Returns
         -------
         labels : `array`
-            the updated labels array where the left cluster's root has been updated to the above cluster's root
+            the updated labels array where the left cluster's root has been updated to the above
+            cluster's root
     """
     labels[cell_l] = find(cell_a, labels)
     return labels
@@ -118,7 +119,7 @@ def match_labels(label, labels, dim):
         Returns
         -------
         label : `array`
-            the label grid, updated so all cells of a cluster show the root index for easy processing
+            the label grid, updated so all cells in a cluster show the root for easy processing
     """
     for row in range(dim):
         for col in range(dim):
