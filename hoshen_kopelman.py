@@ -42,14 +42,16 @@ def HK_cluster(grid, dim):
                     label[row][col] = find(left, labels)
 
     return label, labels
+def find(value, labels):
 
 
-def find(cell, labels):
-    return labels[cell]
+    if labels[value] != value:
+        return find(labels[value], labels)
+    return labels[value]
 
 
-def union(cell1, cell2, labels):
-    labels[cell2] = find(cell1, labels)
+def union(cell_l, cell_a, labels):
+    labels[cell_l] = find(cell_a, labels)
     return labels
 
 
