@@ -55,12 +55,16 @@ def union(cell_l, cell_a, labels):
     return labels
 
 
+def match_labels(label, labels, dim):
+    for row in range(dim):
+        for col in range(dim):
+            label[row][col] = find(label[row][col], labels)
+    return label
+
+
 tlabel, tlabels = HK_cluster(test_grid, dim)
-print(tlabel)
-print(tlabels)
-# unioned = np.where(tlabels == 1)[0]
-# count = 0
-# for val in unioned:
-#     count += len(np.where(tlabel == val)[0])
-# print(count)
+
+tlabel = match_labels(tlabel, tlabels, dim)
+plt.imshow(tlabel)
+plt.colorbar()
 # %%
