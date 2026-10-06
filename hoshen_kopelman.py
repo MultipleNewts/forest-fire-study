@@ -36,7 +36,7 @@ def HK_cluster(grid, dim):
     # perform raster scan
     for row in range(dim):
         for col in range(dim):
-            if grid[row][col] == 1:
+            if ref_grid[row][col] == 1:
                 try:
                     left = grid[row-1][col]
                 except TypeError:
