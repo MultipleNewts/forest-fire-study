@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # ### TESTING VARS ### #
 dim = 20
-test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.7, 0.29, 0.01])
+test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.5, 0.49, 0.01])
 # #################### #
 
 
@@ -127,9 +127,68 @@ def match_labels(grid, labels, dim):
     return grid
 
 
+def find_centre(cl_idx, grid, dim):
+    """
+        Locates all cells within a cluster and then finds centre using mean.
+        Requires clusters to have been matched using `match_labels(...)`
+
+        Parameters
+        ----------
+        cl_idx : `int`
+            the root index of the cluster of interest
+        grid : `array`
+            the 2d-array of cluster labels
+        dim : `int`
+            the dimension of the grid
+
+        Returns
+        -------
+        centre : `array`
+            a 1d-array of form `[x_avg, y_avg]` pointing to the centre of the cluster
+    """
+    cells = []
+    for row in range(dim):
+        for col in range(dim):
+            if grid[row][col] == cl_idx:
+                cells.append([col, row])
+    centre = np.mean(cells, axis=0)
+    return centre
+
+
+def locate_centres(cl_inds, grid, dim):
+    """
+        Locates centres of all clusters in grid using `find_centre(...)`
+
+        Parameters
+        ----------
+        cl_inds : `array`
+            an array containing the root clutster index of all clusters.
+            Should not include `0`
+        grid : `array`
+            the 2d-array of cluster labels
+        dim : `int`
+            the dimension of the grid
+
+        Returns
+        -------
+        centres : `array`
+           a 2d-array of the locations of all cluster centres of form `[[x1, y1], [x2, y2], ...]`
+    """
+    centres = []
+    for cl_idx in cl_inds:
+        centres.append(find_centre(cl_idx, grid, dim))
+    return np.array(centres)
+
+
 tlabel, tlabels = HK_cluster(test_grid, dim)
 
+# print(np.unique(tlabel)[1:])
 tlabel = match_labels(tlabel, tlabels, dim)
 plt.imshow(tlabel)
 plt.colorbar()
+
+clusters = np.unique(tlabel)[1:]
+centres = locate_centres(clusters, tlabel, dim)
+
+plt.scatter(*centres.T, marker="o", color="red")
 # %%
