@@ -1,19 +1,34 @@
 # %%
 import numpy as np
+import matplotlib.pyplot as plt
 
 
-# test_grid = [
-#     [0, 0, 0, 0, 1],
-#     [0, 1, 0, 1, 1],
-#     [1, 1, 0, 0, 0],
-#     [0, 0, 1, 1, 1],
-#     [1, 1, 0, 1, 0]
-#     ]
-dim = 5000
-test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.6, 0.39, 0.01])
+# ### TESTING VARS ### #
+dim = 10
+test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.7, 0.29, 0.01])
+# #################### #
 
 
 def HK_cluster(grid, dim):
+    """
+        Uses the Hoshen-Kopelman algorithm to idnetify clusters
+
+        Parameters
+        ----------
+        grid : `array`
+            the 2d array containing the board states
+        dim : `int`
+            the dimension of the board
+
+        Returns
+        -------
+        label : `array`
+            a 2d-array containing labelled clusters (Note: clusters are matched through roots,
+            so they may not directly show the correct number in this array.
+            Run `match_labels(...)` to fix).
+        labels : `array`
+            a 1d-array containing the root of each index. Reduces time waste from doubling-back.
+    """
     largest_label = 0
     label = np.zeros((dim, dim), dtype=int)
     labels = np.arange(dim*dim)
@@ -41,21 +56,70 @@ def HK_cluster(grid, dim):
                     labels = union(left, above, labels)
                     label[row][col] = find(left, labels)
 
-    return label, labels
+    return label, labels[:largest_label+1]
+
+
 def find(value, labels):
+    """
+        Finds the root of the current cell
 
+        Parameters
+        ----------
+        value : `int`
+            the cluster index of the cell
+        labels : `array`
+            a 1d-array containing the root of each index
 
+        Returns
+        -------
+        root : `int`
+            the root index of the current cell. Ensures clusters are matched properly
+    """
     if labels[value] != value:
         return find(labels[value], labels)
     return labels[value]
 
 
 def union(cell_l, cell_a, labels):
+    """
+        Updates the root of a cluster to bind two clusters
+
+        Parameters
+        ----------
+        cell_l : `int`
+            the cluster index of the left cell
+        cell_a : `int`
+            the cluster index of the above cell
+        labels : `array`
+            a 1d-array containing the root of each index
+
+        Returns
+        -------
+        labels : `array`
+            the updated labels array where the left cluster's root has been updated to the above cluster's root
+    """
     labels[cell_l] = find(cell_a, labels)
     return labels
 
 
 def match_labels(label, labels, dim):
+    """
+        Matches all cluster labels to their root label. Improves cluster processing
+
+        Parameters
+        ----------
+        label : `array`
+            the 2d-array containing cluster labels
+        labels : `array`
+            a 1d-array containing the root of each cluster index
+        dim : `int`
+            the dimension of the grid
+
+        Returns
+        -------
+        label : `array`
+            the label grid, updated so all cells of a cluster show the root index for easy processing
+    """
     for row in range(dim):
         for col in range(dim):
             label[row][col] = find(label[row][col], labels)
