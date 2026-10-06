@@ -9,7 +9,7 @@ test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.7, 0.29, 0.01])
 # #################### #
 
 
-def HK_cluster(grid, dim):
+def HK_cluster(ref_grid, dim):
     """
         Uses the Hoshen-Kopelman algorithm to idnetify clusters
 
