@@ -284,7 +284,12 @@ if __name__ == "__main__":
     tlabel = match_labels(tlabel, tlabels, dim)
 
     # visualisation for debugging
-    plt.imshow(tlabel)
+    cmap = plt.colormaps['viridis'].copy()
+    cmap.set_under('white')
+
+    norm = mcolors.Normalize(vmin=0.5, vmax=tlabel.max())
+
+    plt.imshow(tlabel, cmap=cmap, norm=norm, interpolation='nearest')
     plt.colorbar()
 
     # finds all cluster indecies
