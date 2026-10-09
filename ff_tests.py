@@ -23,41 +23,69 @@ board = np.random.choice([0, 1, 2], size=(dim, dim), p=[1, 0, 0])
 cmap = plt.matplotlib.colors.ListedColormap(["black", "green", "red"])
 # cmap = plt.matplotlib.colors.ListedColormap(["black", "gray", "white"])
 
-frames = []  # list to store all frame images
-data = []
 
-# Loop over time steps (50 here, but change as you like)
-for i in range(100):
-    temp = board.ravel()
-    data.append(np.bincount(temp, minlength=3))
+# %%
+def graphical_run(board, cmap):
+    data = []
+    frames = []
+    # Loop over time steps
+    for i in range(100):
+        temp = board.ravel()
+        data.append(np.bincount(temp, minlength=3))
 
-    # prevents overwriting reference board
-    new_board = np.zeros((dim, dim), dtype=int)
-    # go through rows and columns
-    for y, row in enumerate(board):
-        for x, column in enumerate(row):
-            # find new state from updating reference board
-            new_board[y, x] = fr.update_cell(board, x, y, dim=dim, p=0.1, fpratio=0.1)
-    # new reference board is updated board
-    board = new_board
+        # prevents overwriting reference board
+        new_board = np.zeros((dim, dim), dtype=int)
+        # go through rows and columns
+        for y, row in enumerate(board):
+            for x, column in enumerate(row):
+                # find new state from updating reference board
+                new_board[y, x] = fr.update_cell(board, x, y, dim=dim, p=0.1, fpratio=0.1)
+        # new reference board is updated board
+        board = new_board
 
-    # Plot the board
-    plt.imshow(board, cmap=cmap, vmin=0, vmax=2)
-    plt.title(f"Time: {i}")
+        # Plot the board
+        plt.imshow(board, cmap=cmap, vmin=0, vmax=2)
+        plt.title(f"Time: {i}")
 
-    # Save the current frame as a PNG
-    frame_path = os.path.join("frames", f"frame{i}.png")
-    plt.savefig(frame_path)
+        # Save the current frame as a PNG
+        frame_path = os.path.join("frames", f"frame{i}.png")
+        plt.savefig(frame_path)
 
-    # Load the PNG back into memory for the GIF
-    frames.append(iio.imread(frame_path))
+        # Load the PNG back into memory for the GIF
+        frames.append(iio.imread(frame_path))
 
-    # Close the figure so we don’t pile up too many open plots
-    plt.close()
+        # Close the figure so we don’t pile up too many open plots
+        plt.close()
 
-# Save all frames into a looping GIF. Increase frames per second (fps) if needed
-iio.imwrite("movie.gif", frames, loop=0, fps=10)
-print("Saved movie.gif (check your folder!)")
+    # Save all frames into a looping GIF. Increase frames per second (fps) if needed
+    iio.imwrite("movie.gif", frames, loop=0, fps=10)
+    print("Saved movie.gif (check your folder!)")
+
+    return data
+
+
+def stand_run(board, cmap):
+    # Loop over time steps
+    for i in range(100):
+        temp = board.ravel()
+        data.append(np.bincount(temp, minlength=3))
+
+        # prevents overwriting reference board
+        new_board = np.zeros((dim, dim), dtype=int)
+        # go through rows and columns
+        for y, row in enumerate(board):
+            for x, column in enumerate(row):
+                # find new state from updating reference board
+                new_board[y, x] = fr.update_cell(board, x, y, dim=dim, p=0.1, fpratio=0.1)
+        # new reference board is updated board
+        board = new_board
+    return data
+
+
+# %%
+data = graphical_run(board, cmap)
+data = stand_run(board, cmap)
+
 # %%
 x_data = np.arange(len(data))
 data = np.array(data)
