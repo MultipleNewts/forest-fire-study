@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 
 def HK_cluster(ref_grid, dim):
@@ -50,6 +51,20 @@ def HK_cluster(ref_grid, dim):
                     labels = union(left, above, labels)
                     grid[row][col] = find(left, labels)
 
+    for col in grid[0]:
+        if ref_grid[0][col] == 1:
+            slf = grid[0][col]
+            above = grid[dim-1][col]
+            if above != 0:
+                union(above, slf, labels)
+
+    for row in range(dim):
+        if ref_grid[row][0] == 1:
+            slf = grid[row][0]
+            left = grid[row][dim-1]
+            if left != 0:
+                union(left, slf, labels)
+
     return grid, labels[:largest_label+1]
 
 
@@ -74,26 +89,26 @@ def find(value, labels):
     return labels[value]
 
 
-def union(cell_l, cell_a, labels):
+def union(cell_upd, cell_og, labels):
     """
         Updates the root of a cluster to bind two clusters
 
         Parameters
         ----------
-        cell_l : `int`
-            the cluster index of the left cell
-        cell_a : `int`
-            the cluster index of the above cell
+        cell_upd : `int`
+            the cluster index of the cell to be propagated (typically above cell)
+        cell_og : `int`
+            the cluster index of the cell to be updated (typically left cell)
         labels : `array`
             a 1d-array containing the root of each index
 
         Returns
         -------
         labels : `array`
-            the updated labels array where the left cluster's root has been updated to the above
+            the updated labels array where the (upd) cluster's root has been updated to the (og)
             cluster's root
     """
-    labels[cell_l] = find(cell_a, labels)
+    labels[cell_upd] = find(cell_og, labels)
     return labels
 
 
@@ -119,6 +134,48 @@ def match_labels(grid, labels, dim):
         for col in range(dim):
             grid[row][col] = find(grid[row][col], labels)
     return grid
+
+
+def pbc_correct(cells, dim):
+    """
+        Any clusters that encounter the PBCs (i.e. go over the boundary)
+        and do not spread across the whole grid are suitably translated.
+
+        Parameters
+        ----------
+        cells : `array`
+            the 2d-array of cell coordinates for the cluster
+        dim : `int`
+            the dimension of the grid
+
+        Returns
+        -------
+        cells : `array`
+            a 2d-array of form `[[x1, y1], [x2,y2], ...]` containing the PDC-corrected
+            coordinates of all cells in the cluster
+    """
+    cells = np.array(cells)
+    # find unqiue row and column coords
+    cols = np.unique(cells[:, 0])
+    rows = np.unique(cells[:, 1])
+    # if the cluster features cells in the first and last columns
+    if np.isin([0, (dim-1)], cols).all():
+        # and does NOT stretch the whole grid
+        if not np.array_equal(cols, np.arange(dim)):
+            # the first gap in the cluster is located
+            for i in range(dim):
+                if i not in cols:
+                    offset = i
+            # and all column values past this gap are shifted down
+            cells[np.where(cells[:, 0] > offset), 0] -= dim
+    # repeat for rows
+    if np.isin([0, (dim-1)], rows).all():
+        if not np.array_equal(rows, np.arange(dim)):
+            for i in range(dim):
+                if i not in rows:
+                    offset = i
+            cells[np.where(cells[:, 1] > offset), 1] -= dim
+    return cells
 
 
 def find_centre(cl_idx, grid, dim):
@@ -148,7 +205,11 @@ def find_centre(cl_idx, grid, dim):
         for col in range(dim):
             if grid[row][col] == cl_idx:
                 cells.append([col, row])
+    # PBC correct cells
+    cells = pbc_correct(cells, dim)
     centre = np.mean(cells, axis=0)
+    # if the mean is negative (due to PBC corrections) shift it to the correct side of the grid
+    centre = np.where(centre >= 0, centre, centre + dim - 1)
     return centre, cells
 
 
