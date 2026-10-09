@@ -3,12 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ### TESTING VARS ### #
-dim = 20
-test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.5, 0.49, 0.01])
-# #################### #
-
-
 def HK_cluster(ref_grid, dim):
     """
         Uses the Hoshen-Kopelman algorithm to idnetify clusters
@@ -145,6 +139,9 @@ def find_centre(cl_idx, grid, dim):
         -------
         centre : `array`
             a 1d-array of form `[x_avg, y_avg]` pointing to the centre of the cluster
+        cells : `array`
+            a 2d-array of form `[[x1, y1], [x2,y2], ...]` containing the coordinates
+            of all cells in the cluster
     """
     cells = []
     for row in range(dim):
@@ -152,7 +149,7 @@ def find_centre(cl_idx, grid, dim):
             if grid[row][col] == cl_idx:
                 cells.append([col, row])
     centre = np.mean(cells, axis=0)
-    return centre
+    return centre, cells
 
 
 def locate_centres(cl_inds, grid, dim):
@@ -172,23 +169,74 @@ def locate_centres(cl_inds, grid, dim):
         Returns
         -------
         centres : `array`
-           a 2d-array of the locations of all cluster centres of form `[[x1, y1], [x2, y2], ...]`
+            a 2d-array of the locations of all cluster centres of form `[[x1, y1], [x2, y2], ...]`
+        clusters : `array`
+            a 3d-array of all the cells coordinates in all clusters
+            of form `[cluster no.][cell number][0:x||1:y]`
     """
     centres = []
+    clusters = []
     for cl_idx in cl_inds:
-        centres.append(find_centre(cl_idx, grid, dim))
-    return np.array(centres)
+        centre, cluster = find_centre(cl_idx, grid, dim)
+        centres.append(centre)
+        clusters.append(cluster)
+    return (np.array(centres), clusters)
 
 
-tlabel, tlabels = HK_cluster(test_grid, dim)
+def compute_radius(cells, centre):
+    """
+        Computes the square-root of the mean square distance of each cell from the centre,
+        providing a value of the "radius" of the cluster.
 
-# print(np.unique(tlabel)[1:])
-tlabel = match_labels(tlabel, tlabels, dim)
-plt.imshow(tlabel)
-plt.colorbar()
+        Parameters
+        ----------
+        cells : `array`
+            a 2d-array containing the coordinate positions of all cells within the cluster
+        centre : `array`
+            a 1d-array contianing the coordinates of the cluster centre, of form `[x, y]`
 
-clusters = np.unique(tlabel)[1:]
-centres = locate_centres(clusters, tlabel, dim)
+        Returns
+        -------
+        RMS_radius : `float`
+            the RMS "radius" of the cluster
+    """
+    sq_diff = 0
+    N = len(cells)
+    for cell in cells:
+        vdiff = cell - centre
+        sq_diff += np.sum((vdiff)**2)
+    RMS_radius = np.sqrt(sq_diff/N)
+    return RMS_radius
 
-plt.scatter(*centres.T, marker="o", color="red")
+
+# for debugging and testing. Also shows running order
+if __name__ == "__main__":
+    # ### TESTING VARS ### #
+    dim = 25
+    test_grid = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.5, 0.49, 0.01])
+    # #################### #
+
+    # run HK clustering algorithm to find clusters
+    tlabel, tlabels = HK_cluster(test_grid, dim)
+
+    # match all cluster labels to root
+    tlabel = match_labels(tlabel, tlabels, dim)
+
+    # visualisation for debugging
+    plt.imshow(tlabel)
+    plt.colorbar()
+
+    # finds all cluster indecies
+    clusters = np.unique(tlabel)[1:]
+    # locates all cluster centres and the cells within each cluster
+    centres, clusters = locate_centres(clusters, tlabel, dim)
+
+    # plots the centres of each cluster for debugging
+    plt.scatter(*centres.T, marker="o", color="red")
+
+    # computes the "radius" of each cluster
+    radii = []
+    for i, centre in enumerate(centres):
+        radii.append(compute_radius(clusters[i], centre))
+
 # %%
