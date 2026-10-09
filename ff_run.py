@@ -57,7 +57,7 @@ def stand_run(board, dim, dur):
     # Loop over time steps
     for i in range(dur):
         temp = board.ravel()
-        board_data.append(temp)
+        board_data.append(board)
         tile_data.append(np.bincount(temp, minlength=3))
 
         # prevents overwriting reference board

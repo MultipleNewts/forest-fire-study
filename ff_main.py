@@ -4,6 +4,7 @@ import numpy as np
 import ff_run as frun
 import ff_plot as fplot
 import ff_filehandler as fh
+import hoshen_kopelman as hk
 # import matplotlib.pyplot as plt
 # import ff_rules as fr
 
@@ -11,7 +12,7 @@ import ff_filehandler as fh
 
 # setup variables
 dim = 150
-dur = 5
+dur = 100
 fpratio = 0.001
 p = 0.001
 
@@ -42,5 +43,25 @@ empty, trees, fires = data.T
 
 # plots tile data
 fplot.plot_tile_states(x_data, empty, trees, fires)
+
+# %%
+samples = bdata[::20]
+samp_data = []
+for sample in samples:
+    tlabel, tlabels = hk.HK_cluster(sample, dim)
+    tlabel = hk.match_labels(tlabel, tlabels, dim)
+
+    clusters = np.unique(tlabel)[1:]
+    centres, clusters = hk.locate_centres(clusters, tlabel, dim)
+
+    sizes = []
+    for cluster in clusters:
+        sizes.append(len(cluster))
+
+    radii = []
+    for i, centre in enumerate(centres):
+        radii.append(hk.compute_radius(clusters[i], centre))
+
+    samp_data.append([sizes, radii])
 
 # %%
