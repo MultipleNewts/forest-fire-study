@@ -51,12 +51,14 @@ def graphical_run(board, dim, dur):
 
 
 def stand_run(board, dim, dur):
-    data = []
+    tile_data = []
+    board_data = []
 
     # Loop over time steps
     for i in range(dur):
         temp = board.ravel()
-        data.append(np.bincount(temp, minlength=3))
+        board_data.append(temp)
+        tile_data.append(np.bincount(temp, minlength=3))
 
         # prevents overwriting reference board
         new_board = np.zeros((dim, dim), dtype=int)
@@ -67,4 +69,4 @@ def stand_run(board, dim, dur):
                 new_board[y, x] = fr.update_cell(board, x, y, dim=dim, p=0.1, fpratio=0.1)
         # new reference board is updated board
         board = new_board
-    return data
+    return tile_data, board_data
