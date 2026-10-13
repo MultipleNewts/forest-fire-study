@@ -45,8 +45,10 @@ empty, trees, fires = data.T
 fplot.plot_tile_states(x_data, empty, trees, fires)
 
 # %%
-samples = bdata[::20]
-samp_data = []
+data_step = 20
+samples = bdata[::data_step]
+sizs = []
+rads = []
 for sample in samples:
     tlabel, tlabels = hk.HK_cluster(sample, dim)
     tlabel = hk.match_labels(tlabel, tlabels, dim)
@@ -62,6 +64,20 @@ for sample in samples:
     for i, centre in enumerate(centres):
         radii.append(hk.compute_radius(clusters[i], centre))
 
-    samp_data.append([sizes, radii])
+    mmrad = [np.max(radii), np.mean(radii)]
+    mmsiz = [np.max(sizes), np.mean(sizes)]
+    sizs.append(mmsiz)
+    rads.append(mmrad)
 
+# %%
+stemp = np.array(sizs).T
+rtemp = np.array(rads).T
+smax = stemp[0]
+savg = stemp[1]
+rmax = rtemp[0]
+ravg = rtemp[1]
+x = np.arange(len(smax))*data_step
+
+fplot.plot_minmax(x, savg, smax, "Size", data_step)
+fplot.plot_minmax(x, ravg, rmax, "Size", data_step)
 # %%
