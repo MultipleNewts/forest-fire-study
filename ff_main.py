@@ -1,20 +1,24 @@
 # %%
+# import importlib
+# use importlib.reload([name])
 import os
 import numpy as np
 import ff_run as frun
 import ff_plot as fplot
 import ff_filehandler as fh
 import hoshen_kopelman as hk
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import ff_fit as fit
 # import ff_rules as fr
 
 # %%
 
 # setup variables
 dim = 150
-dur = 100
-fpratio = 0.001
-p = 0.001
+dur = 300
+fpratio = 0.005
+p = 0.05
+# ###
 
 # Make a folder to store frame images for graphics
 os.makedirs("frames", exist_ok=True)
@@ -30,10 +34,11 @@ board = np.random.choice([0, 1, 2], size=(dim, dim), p=[0.5, 0.49, 0.01])
 
 data, bdata = frun.stand_run(board, dim, dur)
 
+# %%
 # if True, store this runs data under the specified name
 store = False
 if store is True:
-    fh.write_data(bdata, dim, dur, "test")
+    fh.write_data(bdata, dim, dur, "LargeRun")
 
 # %%
 # structures tile data for study
@@ -49,11 +54,18 @@ data_step = 20
 samples = bdata[::data_step]
 sizs = []
 rads = []
+n_clusters = []
+incr = 0
+incr_check = len(samples)//10
 for sample in samples:
+    incr += 1
+    if incr % incr_check == 0:
+        print(incr)
     tlabel, tlabels = hk.HK_cluster(sample, dim)
     tlabel = hk.match_labels(tlabel, tlabels, dim)
 
     clusters = np.unique(tlabel)[1:]
+    n_clusters.append(len(clusters))
     centres, clusters = hk.locate_centres(clusters, tlabel, dim)
 
     sizes = []
@@ -69,6 +81,7 @@ for sample in samples:
     sizs.append(mmsiz)
     rads.append(mmrad)
 
+
 # %%
 stemp = np.array(sizs).T
 rtemp = np.array(rads).T
@@ -76,8 +89,22 @@ smax = stemp[0]
 savg = stemp[1]
 rmax = rtemp[0]
 ravg = rtemp[1]
-x = np.arange(len(smax))*data_step
+x = np.arange(len(smax), dtype=float)*data_step
 
-fplot.plot_minmax(x, savg, smax, "Size", data_step)
-fplot.plot_minmax(x, ravg, rmax, "Size", data_step)
+# %%
+epsilon = 1e-12
+# params =
+# fit.fit_params(savg, x+epsilon, ntests=30, kran=[0, 0.2], pran=[-0.2, 0], oran=[3.6, 3.8])
+params = fit.fit_params(savg, x+epsilon, ntests=50, kran=[-4, 4], pran=[-4, 4], oran=[-10, 10])
+fit_model = fit.model(x+epsilon, *params)
+fit.plot_dat_mod(x, savg, params)
+print(params)
+
+# %%
+plt.plot(x, ravg)
+plt.plot(x, savg)
+plt.plot(x, n_clusters)
+plt.loglog()
+plt.show()
+
 # %%
