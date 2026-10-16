@@ -56,6 +56,8 @@ def stand_run(board, dim, dur):
 
     # Loop over time steps
     for i in range(dur):
+        if i % 100 == 0:
+            print(i)
         temp = board.ravel()
         board_data.append(board)
         tile_data.append(np.bincount(temp, minlength=3))
