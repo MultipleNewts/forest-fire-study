@@ -1,5 +1,6 @@
 # %%
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 # %%
@@ -70,4 +71,24 @@ def plot_minmax(x, means, maxes, label, step=20):
     ax.legend()
 
     plt.tight_layout()
+    plt.show()
+
+
+# %%
+def plot_bin_hist(sizes, max=100):
+    """
+        Plots the number of occurences of each sized cluster
+
+        Parameters
+        ----------
+        sizes : `array`
+            an array of sizes, can be flat or inhomogenous, just needs all counted sizes
+    """
+    flat = np.concatenate(sizes)
+    num_b = len(np.unique(flat))
+    plt.hist(flat, num_b)
+    plt.xlim([0, max])
+    plt.xlabel("Cluster Size")
+    plt.ylabel("No. of Occurences")
+    plt.title("Occurence of Cluster Sizes")
     plt.show()

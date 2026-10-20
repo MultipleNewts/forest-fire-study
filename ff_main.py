@@ -55,6 +55,7 @@ samples = bdata[::data_step]
 sizs = []
 rads = []
 n_clusters = []
+count_sz = []
 incr = 0
 incr_check = len(samples)//10
 for sample in samples:
@@ -76,11 +77,15 @@ for sample in samples:
     for i, centre in enumerate(centres):
         radii.append(hk.compute_radius(clusters[i], centre))
 
+    count_sz.append(sizes)
     mmrad = [np.max(radii), np.mean(radii)]
     mmsiz = [np.max(sizes), np.mean(sizes)]
     sizs.append(mmsiz)
     rads.append(mmrad)
 
+
+# %%
+fplot.plot_bin_hist(count_sz)
 
 # %%
 stemp = np.array(sizs).T
@@ -104,7 +109,7 @@ print(params)
 plt.plot(x, ravg)
 plt.plot(x, savg)
 plt.plot(x, n_clusters)
-plt.loglog()
+# plt.loglog()
 plt.show()
 
 # %%
