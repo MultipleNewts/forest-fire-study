@@ -32,7 +32,7 @@ def equality_func(x, const):
 
 
 def find_param(fixed_val, strt=5):
-    alpha = fsolve(equality_func, strt, args=fixed_val)
+    alpha = fsolve(equality_func, strt, args=fixed_val, maxfev=800)
     return alpha[0]
 
 
@@ -102,7 +102,7 @@ def get_error(val, N):
     """
     term1 = zeta_nprime(val, n=2)/riemann_zeta(val)
     term2 = np.power((zeta_nprime(val, n=1)/riemann_zeta(val)), 2)
-    comb_term = np.sqrt(np.abs(term1-term2))
+    comb_term = np.sqrt((term2-term1))
     scale = 1/np.sqrt(N)
     print(term1, term2, comb_term, scale)
     return scale/comb_term

@@ -87,12 +87,15 @@ for sample in samples:
 
 # %%
 importlib.reload(mle)
-fplot.plot_bin_hist(count_sz)
 check_val = np.mean(np.log(np.concatenate(count_sz)))
 N = len(np.concatenate(count_sz))
-alpha = mle.find_param(check_val)
+alpha = mle.find_param(check_val, strt=1.1)
 error = mle.get_error(alpha, N)
-print(f"Paramter is {alpha} +- {error}")
+print(f"Paramter is {alpha:.4f} +- {error:.4f}")
+
+# %%
+importlib.reload(fplot)
+fplot.plot_bin_hist(count_sz, alpha, error)
 
 # %%
 stemp = np.array(sizs).T

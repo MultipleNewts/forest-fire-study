@@ -75,7 +75,7 @@ def plot_minmax(x, means, maxes, label, step=20):
 
 
 # %%
-def plot_bin_hist(sizes, max=100):
+def plot_bin_hist(sizes, alpha, error, max_val=100):
     """
         Plots the number of occurences of each sized cluster
 
@@ -86,9 +86,18 @@ def plot_bin_hist(sizes, max=100):
     """
     flat = np.concatenate(sizes)
     num_b = len(np.unique(flat))
-    plt.hist(flat, num_b)
-    plt.xlim([0, max])
+    X = np.linspace(-1, max_val, 1000)
+    scale = np.count_nonzero(np.where(flat == 1, 1, 0))
+    model = scale*np.power(X, -alpha)
+    MLE_lab = f"MLE: {alpha:.4f} " + r"$\pm$" + f" {error:.4f}"
+    plt.hist(flat, num_b, facecolor="blue", label="Cluster Size Distribution")
+    plt.plot(X, model, c="orange", label=MLE_lab)
+    plt.xlim([-1, max_val])
+    plt.ylim([0, scale*1.3])
     plt.xlabel("Cluster Size")
     plt.ylabel("No. of Occurences")
     plt.title("Occurence of Cluster Sizes")
+    plt.legend(loc="upper right")
     plt.show()
+
+# %%
