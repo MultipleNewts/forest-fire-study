@@ -3,7 +3,8 @@ import numpy as np
 
 
 def pbc(index, dim=100):
-    """Enforces the Periodic Boundary Condition
+    """
+        Enforces the Periodic Boundary Condition
 
         Parameters
         ----------
@@ -16,7 +17,7 @@ def pbc(index, dim=100):
         -------
         index : `int`
             the PBC-corrected index
-        """
+    """
     if index < 0:
         return (dim-1)
     if index >= dim:
