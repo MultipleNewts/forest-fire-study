@@ -122,7 +122,7 @@ def plot_dat_mod(x, data, params, data_label="Data", model_label="Model", y_labe
              linewidth=1.8,
              zorder=2,
              label=model_label)
-    plt.title("Power Model Fit on Cluster Data")
+    plt.title("Power Model Fit on Average Cluster Size")
     plt.xlabel("Time Step")
     plt.ylabel(y_label)
     plt.grid(alpha=0.25)
