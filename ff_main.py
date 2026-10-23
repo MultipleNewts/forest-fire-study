@@ -1,5 +1,5 @@
 # %%
-# import importlib
+import importlib
 # use importlib.reload([name])
 import os
 import numpy as np
@@ -9,13 +9,14 @@ import ff_filehandler as fh
 import hoshen_kopelman as hk
 import matplotlib.pyplot as plt
 import ff_fit as fit
+import FF_MLE as mle
 # import ff_rules as fr
 
 # %%
 
 # setup variables
 dim = 150
-dur = 300
+dur = 2000
 fpratio = 0.005
 p = 0.05
 # ###
@@ -50,7 +51,7 @@ empty, trees, fires = data.T
 fplot.plot_tile_states(x_data, empty, trees, fires)
 
 # %%
-data_step = 20
+data_step = 100
 samples = bdata[::data_step]
 sizs = []
 rads = []
@@ -85,7 +86,13 @@ for sample in samples:
 
 
 # %%
+importlib.reload(mle)
 fplot.plot_bin_hist(count_sz)
+check_val = np.mean(np.log(np.concatenate(count_sz)))
+N = len(np.concatenate(count_sz))
+alpha = mle.find_param(check_val)
+error = mle.get_error(alpha, N)
+print(f"Paramter is {alpha} +- {error}")
 
 # %%
 stemp = np.array(sizs).T
