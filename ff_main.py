@@ -1,13 +1,10 @@
 # %%
-import importlib
-# use importlib.reload([name])
 import os
 import numpy as np
 import ff_run as frun
 import ff_plot as fplot
 import ff_filehandler as fh
 import hoshen_kopelman as hk
-import matplotlib.pyplot as plt
 import ff_fit as fit
 import FF_MLE as mle
 # import ff_rules as fr
@@ -86,15 +83,13 @@ for sample in samples:
 
 
 # %%
-importlib.reload(mle)
 check_val = np.mean(np.log(np.concatenate(count_sz)))
 N = len(np.concatenate(count_sz))
-alpha = mle.find_param(check_val, strt=1.1)
+alpha = mle.find_param(check_val, strt=2)
 error = mle.get_error(alpha, N)
 print(f"Paramter is {alpha:.4f} +- {error:.4f}")
 
 # %%
-importlib.reload(fplot)
 fplot.plot_bin_hist(count_sz, alpha, error)
 
 # %%
@@ -108,18 +103,7 @@ x = np.arange(len(smax), dtype=float)*data_step
 
 # %%
 epsilon = 1e-12
-# params =
-# fit.fit_params(savg, x+epsilon, ntests=30, kran=[0, 0.2], pran=[-0.2, 0], oran=[3.6, 3.8])
 params = fit.fit_params(savg, x+epsilon, ntests=50, kran=[-4, 4], pran=[-4, 4], oran=[-10, 10])
 fit_model = fit.model(x+epsilon, *params)
-fit.plot_dat_mod(x, savg, params)
+fit.plot_dat_mod(x, savg, params, y_label="Cluster Size")
 print(params)
-
-# %%
-plt.plot(x, ravg)
-plt.plot(x, savg)
-plt.plot(x, n_clusters)
-# plt.loglog()
-plt.show()
-
-# %%

@@ -104,5 +104,4 @@ def get_error(val, N):
     term2 = np.power((zeta_nprime(val, n=1)/riemann_zeta(val)), 2)
     comb_term = np.sqrt((term2-term1))
     scale = 1/np.sqrt(N)
-    print(term1, term2, comb_term, scale)
     return scale/comb_term
