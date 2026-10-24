@@ -7,17 +7,20 @@ import ff_rules as fr
 
 
 # %%
+# runs sim and creates gifs to see model run
 def graphical_run(board, dim, dur):
     # Color map: black=empty, green=tree, red=fire
     cmap = plt.matplotlib.colors.ListedColormap(["black", "green", "red"])
     # cmap = plt.matplotlib.colors.ListedColormap(["black", "gray", "white"])
 
-    data = []
+    tile_data = []
+    board_data = []
     frames = []
     # Loop over time steps
     for i in range(dur):
         temp = board.ravel()
-        data.append(np.bincount(temp, minlength=3))
+        board_data.append(board)
+        tile_data.append(np.bincount(temp, minlength=3))
 
         # prevents overwriting reference board
         new_board = np.zeros((dim, dim), dtype=int)
@@ -47,9 +50,10 @@ def graphical_run(board, dim, dur):
     iio.imwrite("movie.gif", frames, loop=0, fps=10)
     print("Saved movie.gif (check your folder!)")
 
-    return data
+    return tile_data, board_data
 
 
+# runs sim without generating gif, slightly improves performance
 def stand_run(board, dim, dur):
     tile_data = []
     board_data = []

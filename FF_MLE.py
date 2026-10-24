@@ -6,36 +6,44 @@ import numpy as np
 
 
 # %%
+# the Riemann Zeta Function
 def riemann_zeta(s):
     return zeta(s)
 
 
+# The nth Derivative of the Riemann Zeta Function
 def zeta_nprime(at_val, n=1):
     return derivative(riemann_zeta, at_val, order=n).df
 
 
+# Calculate the comparison variable z'/z
 def zeta_ratio(s):
     z_prime = zeta_nprime(s)
     z = riemann_zeta(s)
-    # print(z_prime/z)
     return np.abs(z_prime/z)
 
 
+# OBSOLETE
+# Checks to see if result is within tolerated range
 def check_range(val, range):
     if (val >= range[0] and val <= range[1]):
         return True
     return False
 
 
+# The comparison function, set to zero to allow roots to be found
 def equality_func(x, const):
     return zeta_ratio(x)-const
 
 
+# Uses scipy fsolve to find roots of function
 def find_param(fixed_val, strt=5):
     alpha = fsolve(equality_func, strt, args=fixed_val, maxfev=800)
     return alpha[0]
 
 
+# OBSOLETE
+# uses binary search to locate best result
 def find_MLE(check_val, strt=0, step=500, niter=500, acc=1e-6):
     """
         **!!OBSOLETE!!**\n
@@ -83,6 +91,7 @@ def find_MLE(check_val, strt=0, step=500, niter=500, acc=1e-6):
     return cur
 
 
+# uses a formula to calculate the error on the found parameter
 def get_error(val, N):
     """
         Finds the error associated with the input parameter value.
