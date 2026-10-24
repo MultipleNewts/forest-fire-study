@@ -14,7 +14,7 @@ import FF_MLE as mle
 # setup variables
 dim = 150
 dur = 2000
-fpratio = 0.005
+fpratio = 0.0005
 p = 0.05
 # ###
 
@@ -107,3 +107,10 @@ params = fit.fit_params(savg, x+epsilon, ntests=50, kran=[-4, 4], pran=[-4, 4], 
 fit_model = fit.model(x+epsilon, *params)
 fit.plot_dat_mod(x, savg, params, y_label="Cluster Size")
 print(params)
+
+# %%
+fplot.plot_info(x, savg, "Average Cluster Size", data_step, col="blue")
+fplot.plot_info(x, ravg, "Average Cluster Radius", data_step, col="red")
+fplot.plot_info(x, smax, "Max Cluster Size", data_step, col="darkblue")
+fplot.plot_info(x, rmax, "Max Cluster Radius", data_step, col="darkred")
+# %%

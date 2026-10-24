@@ -75,6 +75,51 @@ def plot_minmax(x, means, maxes, label, step=20):
 
 
 # %%
+def plot_info(x, data, clabel, step=20, col="blue"):
+    """
+        Plots progression of cluster average and maximum values (for either cluster size or radius)
+        as the sim progress. Should only take spaced out datapoints to prevent correlation.
+
+        Parameters
+        ----------
+        x : `array`
+            the array indicating the time steps of the selected data
+        means : `array`
+            a 1d-array containing the mean values of the variable at each relevant time step
+        maxes : `array`
+            a 1d-array containing the max values of the variable at each relevant time step
+        label : `str`
+            the name of the relevant variable, for figure labelling
+        step : `int`
+            the spacing between each datapoint, for figure labelling
+    """
+    # AI genned
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+
+    # 1) Dotted vertical connectors between each mean and its max
+    # ax.vlines(x, means, maxes, colors="gray", linestyles="dotted", linewidth=1.5, zorder=1)
+
+    # 2) Solid lines connecting the means together and the maxes together
+    ax.plot(x, data, color=col, linestyle="-", linewidth=1.8, zorder=2)
+    # ax.plot(x, maxes, color="tab:red", linestyle="-", linewidth=1.8, zorder=2)
+
+    # 3) Markers (different colours AND shapes), drawn on top
+    ax.scatter(x, data, color=col, marker="o", s=60, zorder=3, label=clabel)
+    # ax.scatter(x, maxes, color="tab:red", marker="^", s=70, zorder=3, label="Max")
+
+    # Labels, title, legend
+    ax.set_xlabel("Time Step")
+    ax.set_ylabel(f"{clabel} Value")
+    ax.set_title(f"{clabel} Values Every {step} Ticks")
+    ax.set_xticks(x)
+    ax.grid(alpha=0.25)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+
+# %%
 def plot_bin_hist(sizes, alpha, error, max_val=100):
     """
         Plots the number of occurences of each sized cluster
